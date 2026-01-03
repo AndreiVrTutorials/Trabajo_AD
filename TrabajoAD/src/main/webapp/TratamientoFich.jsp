@@ -32,6 +32,9 @@
 				Sector: <input type="text" name="sector"><p>
 				Contaminante: <input type="text" name="contaminante"><p>
 				Cantidad: <input type="text" name="cantidad"><br>
+				<%if(request.getAttribute("mensaje")!=null && !request.getAttribute("mensaje").equals("")){ %>
+					<p 	style="color : red;">${mensaje}</p>
+				<%} %>
 			</td>
 		</tr>
 	</table>
