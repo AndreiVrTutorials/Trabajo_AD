@@ -44,6 +44,8 @@
 	<%
 	}
 	%>
-	<
+	<form action="TratamientoFich.jsp" method="post">
+		<input type="submit" value="Volver">
+	</form>
 </body>
 </html>
