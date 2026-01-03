@@ -18,13 +18,32 @@
 	<table border="1">
 		<tr>
 			<th>Año</th>
+			<th>Grupo Contaminante</th>
+			<th>Codigo Sector</th>
 			<th>Sector</th>
 			<th>Contaminante</th>
+			<th>Unidad</th>
 			<th>Cantidad</th>
 		</tr>
+		<%
+		for(DatosODS datos : listaDatos){
+		%>
+			<tr>
+				<td><%= datos.getAnio() %></td>
+				<td><%= datos.getGrupo() %> </td>
+				<td><%= datos.getCodigoSector() %></td>
+				<td><%= datos.getSector() %></td>
+				<td><%= datos.getContaminante() %></td>
+				<td><%= datos.getUnidad() %> </td>
+				<td><%= datos.getCantidad() %></td>
+			</tr>
+		<%
+		}
+		%>
 	</table>
 	<%
 	}
 	%>
+	<
 </body>
 </html>

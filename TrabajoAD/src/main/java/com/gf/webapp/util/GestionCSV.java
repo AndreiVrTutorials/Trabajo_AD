@@ -36,9 +36,11 @@ public class GestionCSV {
 					DatosODS dato = new DatosODS();
 					
 					dato.setAnio(Integer.parseInt(partes[0].trim()));
+					dato.setGrupo(partes[1].trim());
+					dato.setCodigoSector(partes[2].trim());
 					dato.setSector(partes[3].trim());
 					dato.setContaminante(partes[4].trim());
-					
+					dato.setUnidad(partes[5].trim());
 					String cantidad = partes[6].replace(",", ".").trim(); //cambiamos de coma a punto para evitar problemas
 					dato.setCantidad(Double.parseDouble(cantidad));
 					
@@ -58,8 +60,13 @@ public class GestionCSV {
 		 * Explicacion: cojemos los objetos y los transformamos en texto
 		 */
 		try (PrintWriter escribir = new PrintWriter(new FileWriter(ruta, true))){
-			String linea = datos.getAnio() + ";" + "Grupo-Usuario" + ";" + "0" +";" + datos.getSector() + ";" 
-					+ datos.getContaminante() + ";" + "t" + ";" + datos.getCantidad();
+			String linea = datos.getAnio() + ";"
+							+ datos.getGrupo() + ";"
+							+ datos.getCodigoSector() + ";"
+							+ datos.getSector() + ";"
+							+ datos.getContaminante() + ";"
+							+ datos.getUnidad() + ";"
+							+ datos.getCantidad() + ";";
 			//el 0 corresponde al id, y t a la unidad de medida
 			escribir.println(linea);
 		}catch (Exception e) {
