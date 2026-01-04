@@ -9,6 +9,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gf.webapp.entity.DatosODS;
 
+//REALIZADO POR SAMUEL CARNERO, debido a que no podia subir los cambios a github, me paso lo que hizo (Andrei) y los puse
 public class GestionJSON {
 	public static List<DatosODS> leerJSON(String rutaFichero) throws IOException {
 
