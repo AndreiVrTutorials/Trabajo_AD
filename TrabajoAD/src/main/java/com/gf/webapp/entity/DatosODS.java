@@ -10,6 +10,14 @@ public class DatosODS {
 	private double cantidad;
 	
 	public DatosODS() {}
+	
+	public DatosODS(int anio, String sector, String contaminante, double cantidad) {
+		super();
+		this.anio = anio;
+		this.sector = sector;
+		this.contaminante = contaminante;
+		this.cantidad = cantidad;
+	}
 
 	public DatosODS(int anio, String grupo, String codigoSector, String sector, String contaminante, String unidad,
 			double cantidad) {
@@ -22,7 +30,7 @@ public class DatosODS {
 		this.unidad = unidad;
 		this.cantidad = cantidad;
 	}
-
+	
 	public int getAnio() {
 		return anio;
 	}
