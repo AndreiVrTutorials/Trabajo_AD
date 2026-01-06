@@ -102,9 +102,9 @@ public class ServletFich extends HttpServlet {
                         return;
                     }
                     DatosODS nuevo = crearObjeto(anioStr, grupo, codigo, sector, contaminante, unidad, cantidadStr);
-                    gestor.escribirRDF(rutaRDF, nuevo);
+                    gestor.escribirRDF(nuevo);
                 }
-                lista = gestor.leerRDF(rutaRDF);
+                lista = gestor.leerRDF();
                 enviarLista(request, response, lista);
                 return;
             }
