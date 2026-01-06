@@ -46,7 +46,7 @@ public class ServletFich extends HttpServlet {
             String rutaCSV = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.csv");
             String rutaJSON = getServletContext().getRealPath("/ficheros/datos.json");
             String rutaXML = getServletContext().getRealPath("/ficheros/datos.xml");
-            String rutaRDF = getServletContext().getRealPath("/ficheros/datos.rdf");
+            String rutaRDF = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.rdf");
             String rutaXLS = getServletContext().getRealPath("/ficheros/datos.xls");
 
             if (formato.equalsIgnoreCase("CSV")) {
@@ -95,7 +95,7 @@ public class ServletFich extends HttpServlet {
             }
 
             if (formato.equalsIgnoreCase("RDF")) {
-                GestionRDF gestor = new GestionRDF();
+                GestionRDF gestor = new GestionRDF(rutaRDF);
                 if (accion.equalsIgnoreCase("escritura")) {
                     if (faltanDatos(anioStr, grupo, codigo, sector, contaminante, unidad, cantidadStr)) {
                         enviarError(request, response, "Faltan datos para escribir en RDF");
