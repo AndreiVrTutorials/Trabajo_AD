@@ -16,31 +16,30 @@ import com.gf.webapp.entity.DatosODS;
  */
 public class GestionRDF {
 
-    private static final String NS = "http://inventarioemisiones.madrid.org/";
-    private static final String RUTA_RDF =
-            "src/main/webapp/ficheros/archivo_inventario_emisiones.rdf";
+    private static final String NS =
+        "http://inventarioemisiones.madrid.org/";
 
-    /**
-     * Guarda un objeto DatosODS como un recurso RDF
-     */
+    private final String rutaRDF;
+
+    public GestionRDF(String rutaRDF) {
+        this.rutaRDF = rutaRDF;
+    }
+
     public void escribirRDF(DatosODS datos) {
+
+        File archivo = new File(rutaRDF);
 
         try {
             Model model = ModelFactory.createDefaultModel();
 
-            File carpeta = new File("src/main/webapp/ficheros");
-            if (!carpeta.exists()) {
-                carpeta.mkdirs();
-            }
-
-            try (FileInputStream fis = new FileInputStream(RUTA_RDF)) {
-                model.read(fis, null);
-            } catch (Exception e) {
-                System.out.println("Archivo RDF no existe, se creará uno nuevo.");
+            if (archivo.exists()) {
+                try (FileInputStream fis = new FileInputStream(archivo)) {
+                    model.read(fis, null);
+                }
             }
 
             Resource registro = model.createResource(
-                    NS + "registro_" + System.currentTimeMillis());
+                NS + "registro_" + System.currentTimeMillis());
 
             Property pAnio = model.createProperty(NS, "anio");
             Property pGrupo = model.createProperty(NS, "grupo");
@@ -56,14 +55,15 @@ public class GestionRDF {
             registro.addProperty(pSector, datos.getSector());
             registro.addProperty(pContaminante, datos.getContaminante());
             registro.addProperty(pUnidad, datos.getUnidad());
-            registro.addProperty(pCantidad, String.valueOf(datos.getCantidad()));
+            registro.addProperty(pCantidad,
+                String.valueOf(datos.getCantidad()));
 
-            try (FileOutputStream fos = new FileOutputStream(RUTA_RDF)) {
+            try (FileOutputStream fos =
+                     new FileOutputStream(archivo)) {
                 model.write(fos, "RDF/XML-ABBREV");
             }
 
         } catch (Exception e) {
-            System.out.println("Error al escribir el RDF");
             e.printStackTrace();
         }
     }
