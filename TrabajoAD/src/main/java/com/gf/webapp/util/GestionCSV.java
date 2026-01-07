@@ -11,7 +11,6 @@ import java.util.List;
 import com.gf.webapp.entity.DatosODS;
 
 public class GestionCSV {
-	//TO DO: LA RUTA, HAY QUE "CALCULARLA" EN EL SERVLET, EL RESTO ESTA
 	public List<DatosODS> leerCSV(String ruta) {
 		/*
 		 * Explicacion: transformamos el texto del csv en objetos para mostrarlos en la web
@@ -67,7 +66,6 @@ public class GestionCSV {
 							+ datos.getContaminante() + ";"
 							+ datos.getUnidad() + ";"
 							+ datos.getCantidad() + ";";
-			//el 0 corresponde al id, y t a la unidad de medida
 			escribir.println(linea);
 		}catch (Exception e) {
 			// TODO: handle exception
