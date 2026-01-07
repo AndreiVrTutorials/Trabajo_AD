@@ -1,8 +1,6 @@
 package com.gf.webapp.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,33 +8,29 @@ import org.apache.jena.rdf.model.*;
 
 import com.gf.webapp.entity.DatosODS;
 
-/**
- * Gestión de lectura y escritura RDF para el Inventario de Emisiones
- * a la Atmósfera de la Comunidad de Madrid (SNAP).
- */
 public class GestionRDF {
 
-    private static final String NS = "http://inventarioemisiones.madrid.org/";
-    private static final String RUTA_RDF =
-            "src/main/webapp/ficheros/archivo_inventario_emisiones.rdf";
+    private static final String NS =
+            "http://inventarioemisiones.madrid.org/";
 
-    /**
-     * Guarda un objeto DatosODS como un recurso RDF
-     */
+    private final File archivoRDF;
+
+    public GestionRDF(String rutaRealRDF) {
+        this.archivoRDF = new File(rutaRealRDF);
+    }
+
+    // ESCRITURA RDF
     public void escribirRDF(DatosODS datos) {
 
         try {
             Model model = ModelFactory.createDefaultModel();
 
-            File carpeta = new File("src/main/webapp/ficheros");
-            if (!carpeta.exists()) {
-                carpeta.mkdirs();
-            }
-
-            try (FileInputStream fis = new FileInputStream(RUTA_RDF)) {
-                model.read(fis, null);
-            } catch (Exception e) {
-                System.out.println("Archivo RDF no existe, se creará uno nuevo.");
+            // Leer RDF existente SOLO si existe
+            if (archivoRDF.exists()) {
+                try (FileInputStream fis =
+                             new FileInputStream(archivoRDF)) {
+                    model.read(fis, null);
+                }
             }
 
             Resource registro = model.createResource(
@@ -44,78 +38,85 @@ public class GestionRDF {
 
             Property pAnio = model.createProperty(NS, "anio");
             Property pGrupo = model.createProperty(NS, "grupo");
-            Property pCodigoSector = model.createProperty(NS, "codigoSector");
+            Property pCodigoSector =
+                    model.createProperty(NS, "codigoSector");
             Property pSector = model.createProperty(NS, "sector");
-            Property pContaminante = model.createProperty(NS, "contaminante");
+            Property pContaminante =
+                    model.createProperty(NS, "contaminante");
             Property pUnidad = model.createProperty(NS, "unidad");
             Property pCantidad = model.createProperty(NS, "cantidad");
 
-            registro.addProperty(pAnio, String.valueOf(datos.getAnio()));
+            registro.addProperty(pAnio,
+                    String.valueOf(datos.getAnio()));
             registro.addProperty(pGrupo, datos.getGrupo());
-            registro.addProperty(pCodigoSector, datos.getCodigoSector());
+            registro.addProperty(pCodigoSector,
+                    datos.getCodigoSector());
             registro.addProperty(pSector, datos.getSector());
-            registro.addProperty(pContaminante, datos.getContaminante());
+            registro.addProperty(pContaminante,
+                    datos.getContaminante());
             registro.addProperty(pUnidad, datos.getUnidad());
-            registro.addProperty(pCantidad, String.valueOf(datos.getCantidad()));
+            registro.addProperty(pCantidad,
+                    String.valueOf(datos.getCantidad()));
 
-            try (FileOutputStream fos = new FileOutputStream(RUTA_RDF)) {
+            try (FileOutputStream fos =
+                         new FileOutputStream(archivoRDF)) {
                 model.write(fos, "RDF/XML-ABBREV");
             }
 
         } catch (Exception e) {
-            System.out.println("Error al escribir el RDF");
+            System.err.println(
+                "Error al escribir el RDF");
             e.printStackTrace();
         }
     }
 
-    /**
-     * Lee el archivo RDF y devuelve una lista de DatosODS
-     */
+    // LECTURA RDF
     public List<DatosODS> leerRDF() {
 
         List<DatosODS> lista = new ArrayList<>();
 
-        try (FileInputStream fis = new FileInputStream(RUTA_RDF)) {
+        if (!archivoRDF.exists()) {
+            return lista;
+        }
+
+        try (FileInputStream fis =
+                     new FileInputStream(archivoRDF)) {
 
             Model model = ModelFactory.createDefaultModel();
             model.read(fis, null);
 
             Property pAnio = model.createProperty(NS, "anio");
             Property pGrupo = model.createProperty(NS, "grupo");
-            Property pCodigoSector = model.createProperty(NS, "codigoSector");
+            Property pCodigoSector =
+                    model.createProperty(NS, "codigoSector");
             Property pSector = model.createProperty(NS, "sector");
-            Property pContaminante = model.createProperty(NS, "contaminante");
+            Property pContaminante =
+                    model.createProperty(NS, "contaminante");
             Property pUnidad = model.createProperty(NS, "unidad");
             Property pCantidad = model.createProperty(NS, "cantidad");
 
-            ResIterator it = model.listResourcesWithProperty(pAnio);
+            ResIterator it =
+                    model.listResourcesWithProperty(pAnio);
 
             while (it.hasNext()) {
                 Resource r = it.nextResource();
 
-                int anio = r.getProperty(pAnio).getInt();
-                String grupo = r.getProperty(pGrupo).getString();
-                String codigoSector = r.getProperty(pCodigoSector).getString();
-                String sector = r.getProperty(pSector).getString();
-                String contaminante = r.getProperty(pContaminante).getString();
-                String unidad = r.getProperty(pUnidad).getString();
-                double cantidad = r.getProperty(pCantidad).getDouble();
-
                 DatosODS d = new DatosODS(
-                        anio,
-                        grupo,
-                        codigoSector,
-                        sector,
-                        contaminante,
-                        unidad,
-                        cantidad
+                        r.getProperty(pAnio).getInt(),
+                        r.getProperty(pGrupo).getString(),
+                        r.getProperty(pCodigoSector).getString(),
+                        r.getProperty(pSector).getString(),
+                        r.getProperty(pContaminante).getString(),
+                        r.getProperty(pUnidad).getString(),
+                        r.getProperty(pCantidad).getDouble()
                 );
 
                 lista.add(d);
             }
 
         } catch (Exception e) {
-            System.out.println("Error al leer el RDF");
+            System.err.println(
+                "Error al leer el RDF");
             e.printStackTrace();
         }
 

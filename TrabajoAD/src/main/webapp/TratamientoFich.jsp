@@ -29,8 +29,11 @@
 			<td>
 				<h5>Datos:</h5>
 				Año: <input type="text" name="anio"><p>
+				Grupo Contaminante <input type="text" name="grupo"><p>
+				Codigo Sector: <input type="text" name="codigoSector"><p>
 				Sector: <input type="text" name="sector"><p>
 				Contaminante: <input type="text" name="contaminante"><p>
+				Unidad: <input type="text" name="unidad"><p>
 				Cantidad: <input type="text" name="cantidad"><br>
 				<%if(request.getAttribute("mensaje")!=null && !request.getAttribute("mensaje").equals("")){ %>
 					<p 	style="color : red;">${mensaje}</p>
