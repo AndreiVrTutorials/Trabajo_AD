@@ -44,10 +44,10 @@ public class ServletFich extends HttpServlet {
             List<DatosODS> lista = new ArrayList<>();
 
             String rutaCSV = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.csv");
-            String rutaJSON = getServletContext().getRealPath("/ficheros/datos.json");
-            String rutaXML = getServletContext().getRealPath("/ficheros/datos.xml");
+            String rutaJSON = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.json");
+            String rutaXML = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.xml");
             String rutaRDF = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.rdf");
-            String rutaXLS = getServletContext().getRealPath("/ficheros/datos.xls");
+            String rutaXLS = getServletContext().getRealPath("/ficheros/atmosfera_inventario_emisiones.xls");
 
             if (formato.equalsIgnoreCase("CSV")) {
                 GestionCSV gestor = new GestionCSV();

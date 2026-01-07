@@ -4,14 +4,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.jena.rdf.model.*;
-
 import com.gf.webapp.entity.DatosODS;
 
 public class GestionRDF {
-
-    private static final String NS =
-            "http://inventarioemisiones.madrid.org/";
 
     private final File archivoRDF;
 
@@ -19,107 +14,87 @@ public class GestionRDF {
         this.archivoRDF = new File(rutaRealRDF);
     }
 
-    // ESCRITURA RDF
-    public void escribirRDF(DatosODS datos) {
+    public List<DatosODS> leerRDF() {
+        List<DatosODS> lista = new ArrayList<>();
+        if (!archivoRDF.exists()) return lista;
 
-        try {
-            Model model = ModelFactory.createDefaultModel();
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoRDF))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                int start = line.indexOf("\"");
+                int end = line.lastIndexOf("\"");
+                if (start >= 0 && end > start) {
+                    String literal = line.substring(start + 1, end);
+                    String[] partes = literal.split(";", -1);
 
-            // Leer RDF existente SOLO si existe
-            if (archivoRDF.exists()) {
-                try (FileInputStream fis =
-                             new FileInputStream(archivoRDF)) {
-                    model.read(fis, null);
+                    if (partes.length >= 7) {
+                        try {
+                            DatosODS d = new DatosODS(
+                                    Integer.parseInt(partes[0]),  
+                                    partes[1],                    
+                                    partes[2],                   
+                                    partes[3],                   
+                                    partes[4],                   
+                                    partes[5],                    
+                                    Double.parseDouble(partes[6]) 
+                            );
+                            lista.add(d);
+                        } catch (NumberFormatException e) {
+                            System.err.println("Error parsing numbers in: " + literal);
+                        }
+                    }
                 }
             }
-
-            Resource registro = model.createResource(
-                    NS + "registro_" + System.currentTimeMillis());
-
-            Property pAnio = model.createProperty(NS, "anio");
-            Property pGrupo = model.createProperty(NS, "grupo");
-            Property pCodigoSector =
-                    model.createProperty(NS, "codigoSector");
-            Property pSector = model.createProperty(NS, "sector");
-            Property pContaminante =
-                    model.createProperty(NS, "contaminante");
-            Property pUnidad = model.createProperty(NS, "unidad");
-            Property pCantidad = model.createProperty(NS, "cantidad");
-
-            registro.addProperty(pAnio,
-                    String.valueOf(datos.getAnio()));
-            registro.addProperty(pGrupo, datos.getGrupo());
-            registro.addProperty(pCodigoSector,
-                    datos.getCodigoSector());
-            registro.addProperty(pSector, datos.getSector());
-            registro.addProperty(pContaminante,
-                    datos.getContaminante());
-            registro.addProperty(pUnidad, datos.getUnidad());
-            registro.addProperty(pCantidad,
-                    String.valueOf(datos.getCantidad()));
-
-            try (FileOutputStream fos =
-                         new FileOutputStream(archivoRDF)) {
-                model.write(fos, "RDF/XML-ABBREV");
-            }
-
         } catch (Exception e) {
-            System.err.println(
-                "Error al escribir el RDF");
-            e.printStackTrace();
-        }
-    }
-
-    // LECTURA RDF
-    public List<DatosODS> leerRDF() {
-
-        List<DatosODS> lista = new ArrayList<>();
-
-        if (!archivoRDF.exists()) {
-            return lista;
-        }
-
-        try (FileInputStream fis =
-                     new FileInputStream(archivoRDF)) {
-
-            Model model = ModelFactory.createDefaultModel();
-            model.read(fis, null);
-
-            Property pAnio = model.createProperty(NS, "anio");
-            Property pGrupo = model.createProperty(NS, "grupo");
-            Property pCodigoSector =
-                    model.createProperty(NS, "codigoSector");
-            Property pSector = model.createProperty(NS, "sector");
-            Property pContaminante =
-                    model.createProperty(NS, "contaminante");
-            Property pUnidad = model.createProperty(NS, "unidad");
-            Property pCantidad = model.createProperty(NS, "cantidad");
-
-            ResIterator it =
-                    model.listResourcesWithProperty(pAnio);
-
-            while (it.hasNext()) {
-                Resource r = it.nextResource();
-
-                DatosODS d = new DatosODS(
-                        r.getProperty(pAnio).getInt(),
-                        r.getProperty(pGrupo).getString(),
-                        r.getProperty(pCodigoSector).getString(),
-                        r.getProperty(pSector).getString(),
-                        r.getProperty(pContaminante).getString(),
-                        r.getProperty(pUnidad).getString(),
-                        r.getProperty(pCantidad).getDouble()
-                );
-
-                lista.add(d);
-            }
-
-        } catch (Exception e) {
-            System.err.println(
-                "Error al leer el RDF");
+            System.err.println("Error al leer el RDF");
             e.printStackTrace();
         }
 
         return lista;
+    }
+    
+    public void escribirRDF(DatosODS datos) {
+        try {
+            List<String> lineas = new ArrayList<>();
+            if (archivoRDF.exists()) {
+                try (BufferedReader br = new BufferedReader(new FileReader(archivoRDF))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        lineas.add(line);
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("<http://example.com/resource/row-")
+              .append(System.currentTimeMillis())
+              .append(">\n");
+            sb.append("    rdf:type <http://schema.org/Thing>\n");
+            sb.append("    prop:atm_inventario_a_o_atm_inventario_grupo_cont_")
+              .append("atm_inventario_sector_atm_inventario_sector_descripcion_")
+              .append("atm_inventario_cont_desc_atm_inventario_cont_unidades_")
+              .append("atm_inventario_cont_cantidad \"")
+              .append(datos.getAnio()).append(";")
+              .append(datos.getGrupo()).append(";")
+              .append(datos.getCodigoSector()).append(";")
+              .append(datos.getSector()).append(";")
+              .append(datos.getContaminante()).append(";")
+              .append(datos.getUnidad()).append(";")
+              .append(datos.getCantidad())
+              .append("\" .\n");
+
+            lineas.add(sb.toString());
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivoRDF))) {
+                for (String l : lineas) {
+                    bw.write(l);
+                    if (!l.endsWith("\n")) bw.newLine();
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al escribir el RDF");
+            e.printStackTrace();
+        }
     }
 }

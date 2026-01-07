@@ -1,13 +1,29 @@
 package com.gf.webapp.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatosODS {
-	private int anio;
-	private String grupo;
-	private String codigoSector;
-	private String sector;
-	private String contaminante;
-	private String unidad;
-	private double cantidad;
+	@JsonProperty("atm_inventario_año")
+    private int anio;
+
+    @JsonProperty("atm_inventario_grupo_cont")
+    private String grupo;
+
+    @JsonProperty("atm_inventario_sector")
+    private String codigoSector;
+
+    @JsonProperty("atm_inventario_sector_descripcion")
+    private String sector;
+
+    @JsonProperty("atm_inventario_cont_desc")
+    private String contaminante;
+
+    @JsonProperty("atm_inventario_cont_unidades")
+    private String unidad;
+
+    @JsonProperty("atm_inventario_cont_cantidad")
+    private double cantidad;
 	
 	public DatosODS() {}
 	
